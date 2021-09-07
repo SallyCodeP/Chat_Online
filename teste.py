@@ -2,12 +2,6 @@ import wave
 import pyaudio
 from threading import Thread
 
-
-
-
-
-
-
 class Record:
     def __init__(self):
         self.number = 0
@@ -15,10 +9,9 @@ class Record:
         
         self.audio = pyaudio.PyAudio()
         self.midia = self.audio.open(format=pyaudio.paInt16, channels=2, rate=44100, input=True,frames_per_buffer=1024)
-        
         Thread(target=self.stopfn).start()
         
-        final_bytes = self.read_audio()
+        final_bytes = self.record_audio()
         self.read_audio(final_bytes)
         
 
@@ -26,7 +19,7 @@ class Record:
         final_audio = []
         while True:
             data = self.midia.read(1024)
-            self.final_audio.append(data)
+            final_audio.append(data)
             if self.stop:
                 self.midia.stop_stream()
                 self.midia.close()
@@ -34,10 +27,9 @@ class Record:
                 return final_audio
 
     def stopfn(self):
-        global stop
         while True:
-            if not input('Press Enter >>>'):
-                stop = True
+            input('Aperte enter ---> ')
+            self.stop = True
 
     def read_audio(self, frame):
         waveFile = wave.open(f"Teste.wav{self.number}", 'wb')

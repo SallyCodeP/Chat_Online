@@ -14,7 +14,7 @@ class Clientt:
         while True:
             querer = input("Conectar a uma sala (1) // Ver clientes ativos (2) // Criar sala (3) // Ver salas ativas (4) // Sair (5)\n---> ")
             if querer == "1":
-                pass
+                self.pedir_para_entrar()
             
             elif querer == "2":
                 conectados = self.ver_conexoes()
@@ -61,7 +61,7 @@ class Clientt:
     def criar_room(self):
         while True:
             erro = False
-            nop = ["\n", "_", "%", "$", "\n%", "#"]
+            nop = ["\n", "_", "%", "$", "\n%", "#", "@"]
 
             room = [input("Coloque o nome da sala ---> "), input("senha da sala ---> ")]
             for element in nop:
@@ -83,10 +83,43 @@ class Clientt:
             alert(conferir)
             # agora a gente vai fazer as funções de um cliente que está conectado em uma room UwU
             
-        
-        
+    def pedir_para_entrar(self):
+        nome_da_sala = input("Qual sala você quer entrar? ---> ")
+        senha = input("Senha da sala ---> ")
+        self.cliente.send(bytes(f"{nome_da_sala}\n#\n{senha}\n#\n", "utf-8"))
+        resposta = self.receber()
+        alert(resposta)
+        if resposta == "entrou":
+            self.chat = True
+            nop = ["\n", "_", "%", "$", "\n%", "#"]
             
+            print("Para sair da sala escreva SAIR!")
+            while True:
+                menssagem = input("---> ")
+                for element in nop:
+                    if element in menssagem:
+                        print("\033[1; 31mCaracter invalido\033[m")
+                        continue
+                if menssagem == "SAIR":
+                    self.cliente(bytes("SAIR#", "utf-8"))
+                    self.chat = False
+                    break
+                self.cliente.send(bytes(menssagem,"utf-8"))
 
+
+    def dj_rogerinho_receber_menssagens_room(self):
+        while self.chat:
+            try:
+                nome = self.cliente.recv(1024)
+            except ConnectionResetError:
+                break
+            except ConnectionAbortedError:
+                break
+            if nome:
+                menssagem = nome.decode("utf-8")
+                if menssagem != "$" and not "\n%" in menssagem and "__" in menssagem:
+                    receber = menssagem.split("__")
+                    print(f"\033[31m{receber[0]}\033[m: {receber[1]}")
 
 
 Clientt()

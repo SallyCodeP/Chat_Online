@@ -7,10 +7,11 @@ from time import sleep
 class Servidor:
     def __init__(self):
         self.conect = dict()
+        self.rooms = dict()
         self.server = ss.socket(ss.AF_INET, ss.SOCK_STREAM)
         self.server.bind((ss.gethostname(), 34345))
         self.server.listen(5)
-        self.rooms = dict()
+        
 
         Thread(target=self.testando).start()
 
@@ -61,14 +62,21 @@ class Servidor:
             elif "criar\nsala\n\n%" in ordem:
                 code = ordem.split("criar\nsala\n\n%")[1]
                 code = code.split("#%")
-                print(code)
                 self.rooms[code[0]] = [code[1], int(code[2]), [cliente]]
+                print(self.rooms)
                 cliente.send(bytes("\n%Criado!","utf-8"))
 
+            elif "\n#\n" in ordem:
+                info = ordem.split("\n#\n")
+                try:
+                    if len(self.rooms[info[0]][2]) < self.rooms[info[0]][1]:
+                        cliente.send(bytes("\n%entrou","utf-8"))
+                        self.rooms[info[0]][2].append(cliente)
+                    else:
+                        cliente.send(bytes("\n%sala lotada","utf-8"))
+                except KeyError:
+                    cliente.send(bytes("\n%Esta sala não existe","utf-8"))
 
-
-
-            if ordem == "chatzinho":
-                pass
+            
 
 Servidor()
