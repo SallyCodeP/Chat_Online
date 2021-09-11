@@ -1,12 +1,15 @@
 import socket as ss
 from random import randint
 from pyautogui import alert
+from threading import Thread
+
 
 class Clientt:
     def __init__(self):
+        self.nop = ["\n", "_", "%", "$", "\n%", "#"]
         self.cliente = ss.socket(ss.AF_INET, ss.SOCK_STREAM)
         self.cliente.bind((ss.gethostname(), randint(50000, 60000)))
-        self.cliente.connect((ss.gethostname(), 34345))
+        self.cliente.connect((ss.gethostname(), 52577))
         
         self.my_name = input("Coloque seu nome ---> ")
         self.cliente.send(bytes(self.my_name, "utf-8"))
@@ -34,7 +37,7 @@ class Clientt:
             elif querer == "5":
                 self.cliente.close()
                 break
-    
+
     def receber(self):
         while True:
             try:
@@ -73,7 +76,7 @@ class Clientt:
                 room.append(str(num))
             except TypeError:
                 print("Invalido!")
-                continue
+                erro = True
             
             if not erro:
                 break
@@ -81,8 +84,7 @@ class Clientt:
         conferir = self.receber()
         if conferir == "Criado!":
             alert(conferir)
-            # agora a gente vai fazer as funções de um cliente que está conectado em uma room UwU
-            
+
     def pedir_para_entrar(self):
         nome_da_sala = input("Qual sala você quer entrar? ---> ")
         senha = input("Senha da sala ---> ")
@@ -91,23 +93,25 @@ class Clientt:
         alert(resposta)
         if resposta == "entrou":
             self.chat = True
-            nop = ["\n", "_", "%", "$", "\n%", "#"]
-            
-            print("Para sair da sala escreva SAIR!")
-            while True:
-                menssagem = input("---> ")
-                for element in nop:
-                    if element in menssagem:
-                        print("\033[1; 31mCaracter invalido\033[m")
-                        continue
-                if menssagem == "SAIR":
-                    self.cliente(bytes("SAIR#", "utf-8"))
-                    self.chat = False
-                    break
-                self.cliente.send(bytes(menssagem,"utf-8"))
+            Thread(target=self.send_menssages).start()
+            self.receber_menssagens_room()
 
+    def send_menssages(self):
+        print('Para sair da sala escreva "SAIR"!')
+        while self.chat:
+            menssagem = input("---> ")
+            if menssagem == "SAIR":
+                self.cliente.send(bytes("SAIR#", "utf-8"))
+                self.chat = False
+                break
+            for element in self.nop:
+                if element in menssagem:
+                    print("Caracter invalido!")
+                    continue
+            if menssagem != "":
+                self.cliente.send(bytes(f"{self.my_name}__{menssagem}__","utf-8"))
 
-    def dj_rogerinho_receber_menssagens_room(self):
+    def receber_menssagens_room(self):
         while self.chat:
             try:
                 nome = self.cliente.recv(1024)
@@ -119,7 +123,7 @@ class Clientt:
                 menssagem = nome.decode("utf-8")
                 if menssagem != "$" and not "\n%" in menssagem and "__" in menssagem:
                     receber = menssagem.split("__")
-                    print(f"\033[31m{receber[0]}\033[m: {receber[1]}")
+                    print(f"{receber[0]}: {receber[1]}")
 
 
 Clientt()

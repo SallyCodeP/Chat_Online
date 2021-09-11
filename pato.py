@@ -9,7 +9,7 @@ class Servidor:
         self.conect = dict()
         self.rooms = dict()
         self.server = ss.socket(ss.AF_INET, ss.SOCK_STREAM)
-        self.server.bind((ss.gethostname(), 34345))
+        self.server.bind((ss.gethostname(), 52577))
         self.server.listen(5)
         
 
@@ -62,7 +62,7 @@ class Servidor:
             elif "criar\nsala\n\n%" in ordem:
                 code = ordem.split("criar\nsala\n\n%")[1]
                 code = code.split("#%")
-                self.rooms[code[0]] = [code[1], int(code[2]), [cliente]]
+                self.rooms[code[0]] = [code[1], int(code[2]), []]
                 print(self.rooms)
                 cliente.send(bytes("\n%Criado!","utf-8"))
 
@@ -70,13 +70,33 @@ class Servidor:
                 info = ordem.split("\n#\n")
                 try:
                     if len(self.rooms[info[0]][2]) < self.rooms[info[0]][1]:
-                        cliente.send(bytes("\n%entrou","utf-8"))
-                        self.rooms[info[0]][2].append(cliente)
+                        if info[1] == self.rooms[info[0]][0]:
+                            self.rooms[info[0]][2].append(cliente)
+                            cliente.send(bytes("\n%entrou","utf-8"))
+                            self.receber_enviar(info[0], cliente)
+
+                        else:
+                            cliente.send(bytes("\n%Senha errada!","utf-8"))
+                            continue
                     else:
                         cliente.send(bytes("\n%sala lotada","utf-8"))
+                        continue
+                
                 except KeyError:
                     cliente.send(bytes("\n%Esta sala não existe","utf-8"))
+                    continue
 
-            
+    def receber_enviar(self, sala, cliente):
+        while True:
+            menssagem = self.receber(cliente)
+            for conectados in self.rooms[sala][2]:
+                if conectados != cliente:
+                    try:
+                        conectados.send(bytes(menssagem, "utf-8"))
+                    except TypeError:
+                        pass
+
+                
+
 
 Servidor()

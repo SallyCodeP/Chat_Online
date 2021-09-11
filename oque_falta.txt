@@ -1,0 +1,4 @@
+Backend:
+Segurança contra o mesmo nome
+Pessoas conectadas na mesma sala poderem conversar
+convidar pessoas para uma sala de chat
