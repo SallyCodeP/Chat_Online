@@ -5,24 +5,50 @@ from time import sleep
 
 
 class Servidor:
+
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+
     def __init__(self):
+
+        # Informação clientes (Objeto socket, IP)
         self.conect = dict()
+
+        # Informação chat rooms
         self.rooms = dict()
+
+        # Configuração inicial server
         self.server = ss.socket(ss.AF_INET, ss.SOCK_STREAM)
         self.server.bind((ss.gethostname(), 52577))
         self.server.listen(5)
         
-
+        # Iniciando teste de conexão com clientes
         Thread(target=self.testando).start()
+        
+        # Conectando e configurando clientes
+        self.conex()
 
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+
+    def conex(self) -> None:
+        '''
+        -Inicia conexão e configura clientes conectados\n
+        -Inicializa em Thread função de comunicação server/cliente em requests\n
+        '''
         while True:
             obj_client, dress = self.server.accept()
             nome_do_cliente = self.receber(obj_client)
             self.conect[nome_do_cliente] = [obj_client, dress[0]]
             Thread(target=self.menu_do_server, args=[obj_client, ]).start()
+            print(self.conect)
+
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 
     @staticmethod
-    def receber(qm):
+    def receber(qm) -> str:
+        '''
+        qm -> Objeto socket\n
+        Recebe, descriptografa (utf-8) e retorna pacote de informações do cliente para o servidor
+        '''
         while True:
             try:
                 nome = qm.recv(10000)
@@ -33,7 +59,13 @@ class Servidor:
             if nome:
                 return nome.decode("utf-8")
 
-    def testando(self):
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+
+    def testando(self) -> None:
+        '''
+        Para cada cliente registrado como conectado no server é enviado bytes para testar a conexão do cliente\n
+        Caso o cliente não receba o pacote de Bytes enviado, ele é desconectado do servidor
+        '''
         while True:
             if len(self.conect) != 0:
                 try:
@@ -50,6 +82,8 @@ class Servidor:
             else:
                 print("Não há clientes conectados!")
                 sleep(1.5)
+
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 
     def menu_do_server(self, cliente):
         while True:
@@ -85,6 +119,8 @@ class Servidor:
                 except KeyError:
                     cliente.send(bytes("\n%Esta sala não existe","utf-8"))
                     continue
+
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 
     def receber_enviar(self, sala, cliente):
         while True:
