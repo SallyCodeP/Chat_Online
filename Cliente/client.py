@@ -5,6 +5,8 @@ from threading import Thread
 
 
 class Clientt:
+
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     def __init__(self):
         self.nop = ["\n", "_", "%", "$", "\n%", "#"]
         self.cliente = ss.socket(ss.AF_INET, ss.SOCK_STREAM)
@@ -38,6 +40,8 @@ class Clientt:
                 self.cliente.close()
                 break
 
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+
     def receber(self):
         while True:
             try:
@@ -51,6 +55,8 @@ class Clientt:
                 if menssagem != "$" and "\n%" in menssagem:
                     return menssagem.split("\n%")[1]
 
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+
     def ver_conexoes(self):
         self.cliente.send(bytes("envie_dicionario", "utf-8"))
         tratamento = self.receber()
@@ -60,6 +66,8 @@ class Clientt:
             return retorno
         except ValueError:
             pass
+
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 
     def criar_room(self):
         while True:
@@ -85,6 +93,8 @@ class Clientt:
         if conferir == "Criado!":
             alert(conferir)
 
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+
     def pedir_para_entrar(self):
         nome_da_sala = input("Qual sala você quer entrar? ---> ")
         senha = input("Senha da sala ---> ")
@@ -95,6 +105,8 @@ class Clientt:
             self.chat = True
             Thread(target=self.send_menssages).start()
             self.receber_menssagens_room()
+
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 
     def send_menssages(self):
         print('Para sair da sala escreva "SAIR"!')
@@ -111,6 +123,8 @@ class Clientt:
             if menssagem != "":
                 self.cliente.send(bytes(f"{self.my_name}__{menssagem}__","utf-8"))
 
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+
     def receber_menssagens_room(self):
         while self.chat:
             try:
@@ -125,5 +139,6 @@ class Clientt:
                     receber = menssagem.split("__")
                     print(f"{receber[0]}: {receber[1]}")
 
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 
 Clientt()

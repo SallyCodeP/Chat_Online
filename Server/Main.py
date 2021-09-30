@@ -6,7 +6,7 @@ from time import sleep
 
 class Servidor:
 
-# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 
     def __init__(self):
 
@@ -27,7 +27,7 @@ class Servidor:
         # Conectando e configurando clientes
         self.conex()
 
-# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #    
 
     def conex(self) -> None:
         '''
@@ -41,7 +41,7 @@ class Servidor:
             Thread(target=self.menu_do_server, args=[obj_client, ]).start()
             print(self.conect)
 
-# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 
     @staticmethod
     def receber(qm) -> str:
@@ -59,7 +59,7 @@ class Servidor:
             if nome:
                 return nome.decode("utf-8")
 
-# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 
     def testando(self) -> None:
         '''
@@ -83,9 +83,9 @@ class Servidor:
                 print("Não há clientes conectados!")
                 sleep(1.5)
 
-# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 
-    def menu_do_server(self, cliente):
+    def menu_do_server(self, cliente) -> None:
         while True:
             ordem = self.receber(cliente)
 
@@ -120,9 +120,9 @@ class Servidor:
                     cliente.send(bytes("\n%Esta sala não existe","utf-8"))
                     continue
 
-# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 
-    def receber_enviar(self, sala, cliente):
+    def receber_enviar(self, sala, cliente) -> None:
         while True:
             menssagem = self.receber(cliente)
             for conectados in self.rooms[sala][2]:
@@ -132,7 +132,6 @@ class Servidor:
                     except TypeError:
                         pass
 
-                
-
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #                
 
 Servidor()
