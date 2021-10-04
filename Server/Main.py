@@ -88,37 +88,40 @@ class Servidor:
     def menu_do_server(self, cliente) -> None:
         while True:
             ordem = self.receber(cliente)
-
-            if ordem == "envie_dicionario":
-                clientes = "\n".join([a for a in self.conect.keys()])
-                cliente.send(bytes(f"\n%{clientes}", "utf-8"))
-            
-            elif "criar\nsala\n\n%" in ordem:
-                code = ordem.split("criar\nsala\n\n%")[1]
-                code = code.split("#%")
-                self.rooms[code[0]] = [code[1], int(code[2]), []]
-                print(self.rooms)
-                cliente.send(bytes("\n%Criado!","utf-8"))
-
-            elif "\n#\n" in ordem:
-                info = ordem.split("\n#\n")
-                try:
-                    if len(self.rooms[info[0]][2]) < self.rooms[info[0]][1]:
-                        if info[1] == self.rooms[info[0]][0]:
-                            self.rooms[info[0]][2].append(cliente)
-                            cliente.send(bytes("\n%entrou","utf-8"))
-                            self.receber_enviar(info[0], cliente)
-
-                        else:
-                            cliente.send(bytes("\n%Senha errada!","utf-8"))
-                            continue
-                    else:
-                        cliente.send(bytes("\n%sala lotada","utf-8"))
-                        continue
+            try:
+                if ordem == "envie_dicionario":
+                    clientes = "\n".join([a for a in self.conect.keys()])
+                    cliente.send(bytes(f"\n%{clientes}", "utf-8"))
                 
-                except KeyError:
-                    cliente.send(bytes("\n%Esta sala não existe","utf-8"))
-                    continue
+                elif "criar\nsala\n\n%" in ordem:
+                    code = ordem.split("criar\nsala\n\n%")[1]
+                    code = code.split("#%")
+                    self.rooms[code[0]] = [code[1], int(code[2]), []]
+                    print(self.rooms)
+                    cliente.send(bytes("\n%Criado!","utf-8"))
+                elif "\n#\n" in ordem:
+                    info = ordem.split("\n#\n")
+                    try:
+                        if len(self.rooms[info[0]][2]) < self.rooms[info[0]][1]:
+                            if info[1] == self.rooms[info[0]][0]:
+                                self.rooms[info[0]][2].append(cliente)
+                                cliente.send(bytes("\n%entrou","utf-8"))
+                                self.receber_enviar(info[0], cliente)
+
+                            else:
+                                cliente.send(bytes("\n%Senha errada!","utf-8"))
+                                continue
+                        else:
+                            cliente.send(bytes("\n%sala lotada","utf-8"))
+                            continue
+                    
+                    except KeyError:
+                        cliente.send(bytes("\n%Esta sala não existe","utf-8"))
+                        continue
+            except TypeError:
+                continue
+
+            
 
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 
