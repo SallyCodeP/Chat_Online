@@ -2,20 +2,33 @@ import socket as ss
 from random import randint
 from pyautogui import alert
 from threading import Thread
+from Inteface.In_Python import chat_interface as chat
+from PyQt5.QtWidgets import QApplication
+from PyQt5 import QtWidgets, QtCore, QtGui
+from time import sleep
 
-
-class Clientt:
+class Clientt(chat.Citrus_interface):
 
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     def __init__(self):
+        super().__init__()
+        # Start Interface 
+        self.show()
+
+        # Client Var
         self.nop = ["\n", "_", "%", "$", "\n%", "#"]
         self.cliente = ss.socket(ss.AF_INET, ss.SOCK_STREAM)
         self.cliente.bind((ss.gethostname(), randint(50000, 60000)))
         self.cliente.connect((ss.gethostname(), 52577))
-        
+
         self.my_name = input("Coloque seu nome ---> ")
         self.cliente.send(bytes(self.my_name, "utf-8"))
         
+        self.rooms = dict()
+
+        # Ver salas ativas
+        Thread(target=self.ative_rooms).start()
+
         while True:
             querer = input("Conectar a uma sala (1) // Ver clientes ativos (2) // Criar sala (3) // Ver salas ativas (4) // Sair (5)\n---> ")
             if querer == "1":
@@ -33,14 +46,30 @@ class Clientt:
             elif querer == "3":
                 self.criar_room()
 
-            elif querer == "4":
-                pass
-
-            elif querer == "5":
-                self.cliente.close()
-                break
-
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+
+    def ative_rooms(self):
+        while True:
+            sleep(3)
+            self.cliente.send(bytes("all_rooms", "utf-8"))
+            try:
+                resposta = self.receber().split("\n")
+                exist = [a for a in self.rooms.keys()]
+                if resposta != exist:
+                    self.atualizar_rooms_interface(resposta)
+            except AttributeError:
+                continue
+            
+    def atualizar_rooms_interface(self, nome):
+        self.menu_list.clear()
+        for element in nome:
+            self.rooms[element] = QtWidgets.QListWidgetItem(element)
+            self.rooms[element].setTextAlignment(QtCore.Qt.AlignHCenter)
+            font = QtGui.QFont()
+            font.setPointSize(12)
+            self.rooms[element].setFont(font)
+            self.menu_list.addItem(self.rooms[element])
+        print(self.rooms.keys())
 
     def receber(self):
         while True:
@@ -141,4 +170,13 @@ class Clientt:
 
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 
-Clientt()
+
+if __name__ == "__main__":
+    while True:
+        import sys
+        try:
+            app = QApplication(sys.argv)
+            abc = Clientt()
+            sys.exit(app.exec_())
+        except AttributeError:
+            continue

@@ -17,7 +17,7 @@
    <widget class="QFrame" name="name_frame">
     <property name="geometry">
      <rect>
-      <x>278</x>
+      <x>280</x>
       <y>0</y>
       <width>800</width>
       <height>101</height>
@@ -38,9 +38,9 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>19</y>
+       <y>20</y>
        <width>800</width>
-       <height>81</height>
+       <height>80</height>
       </rect>
      </property>
      <property name="font">
@@ -173,7 +173,30 @@
      <string notr="true">#menu_list {
 	background-color: rgb(112, 112, 112);
 	border-radius: 1px;
+}
+#menu_list::item {
+	height: 50px;
+	width: 40px;
+	margin: 3px;
+	border-radius: 5px;
+	background-color: rgb(49, 49, 49);
+	color: white;
+	text-align: center;
+}
+
+#menu_list::item:hover {
+	border-color: white;
+	border-width: 2px;
+	border-style: solid;             
+}
+
+#menu_list::item::pressed {
+	color: black;
+	 background-color: white
 }</string>
+    </property>
+    <property name="itemAlignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
    <widget class="QListWidget" name="msg_frame">

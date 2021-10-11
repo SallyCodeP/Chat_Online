@@ -23,7 +23,7 @@ class Servidor:
         
         # Iniciando teste de conexão com clientes
         Thread(target=self.testando).start()
-        
+
         # Conectando e configurando clientes
         self.conex()
 
@@ -99,6 +99,7 @@ class Servidor:
                     self.rooms[code[0]] = [code[1], int(code[2]), []]
                     print(self.rooms)
                     cliente.send(bytes("\n%Criado!","utf-8"))
+                
                 elif "\n#\n" in ordem:
                     info = ordem.split("\n#\n")
                     try:
@@ -118,10 +119,15 @@ class Servidor:
                     except KeyError:
                         cliente.send(bytes("\n%Esta sala não existe","utf-8"))
                         continue
+            
+                elif "all_rooms" in ordem:
+                    abc = "\n".join([a for a in self.rooms.keys()])
+                    cliente.send(bytes(f"\n%{abc}", "utf-8"))
+                    continue
+                    
             except TypeError:
                 continue
 
-            
 
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 
@@ -136,5 +142,6 @@ class Servidor:
                         pass
 
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #                
+
 
 Servidor()
